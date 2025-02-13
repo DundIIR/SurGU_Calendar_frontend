@@ -1,0 +1,50 @@
+@import '../../scss/base/vars';
+
+.form-search {
+	width: 900px;
+	height: 48px;
+	font-family: $font-main;
+	background-color: $white;
+	border-radius: 5px;
+	border: 1px solid $lightBorder;
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.35);
+
+	display: flex;
+}
+
+.form-search__btn {
+	position: relative;
+	padding: 12px;
+	order: -1;
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 5px;
+		right: 0px;
+		width: 1px;
+		bottom: 5px;
+		background-color: $lightBorder;
+	}
+
+	&:hover svg {
+		transform: scale(1.1);
+	}
+
+	&:focus svg {
+		transform: scale(1.2);
+	}
+}
+
+.form-search__field {
+	letter-spacing: 0.01em;
+	width: 100%;
+
+	padding: 12px 12px;
+
+	border-radius: 5px;
+
+	&::placeholder {
+		color: $placeholder;
+	}
+}

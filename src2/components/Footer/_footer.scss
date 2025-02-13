@@ -1,0 +1,39 @@
+@import '../../scss/base/vars';
+
+.footer {
+	height: 80px;
+	padding: 20px 0;
+	color: $white;
+	background-color: $footer;
+}
+
+.footer__wrapper {
+	width: 1820px;
+	margin: 0 auto;
+
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+
+	align-items: center;
+}
+
+.footer__copyright {
+	text-align: center;
+	grid-column: 2 / 3;
+}
+.footer__btn {
+	margin-left: auto;
+	grid-column: 3 / 4;
+}
+.support-btn {
+	width: 242px;
+	height: 40px;
+	padding: 8px 10px 8px 35px;
+	border: 1px solid $lightBorder;
+	border-radius: 5px;
+
+	background-image: url('../../img/support.svg');
+	background-repeat: no-repeat;
+	background-position-x: 11px;
+	background-position-y: 12px;
+}

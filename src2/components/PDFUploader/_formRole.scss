@@ -1,0 +1,20 @@
+@import '../../scss/base/vars';
+
+.custom-scrollbar {
+	&::-webkit-scrollbar {
+		width: 5px; /* Ширина всего элемента навигации */
+		margin-right: 5px;
+	}
+
+	&::-webkit-scrollbar-track {
+		margin: 20px 0;
+		margin-right: 5px;
+		background: $lightBorder; /* Цвет дорожки */
+		border-radius: 10px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: $darkBorder; /* Цвет бегунка */
+		border-radius: 20px; /* Округление бегунка */
+	}
+}

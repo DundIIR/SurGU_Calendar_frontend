@@ -1,0 +1,53 @@
+@import '../../scss/base/vars';
+
+.file-schedule__item {
+	font-family: $font-main;
+	display: flex;
+	margin: 20px 0;
+	border: 1px solid $lightBorder;
+	border-radius: 5px;
+	width: 370px;
+	height: 70px;
+	padding: 10px;
+	box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.35);
+	cursor: pointer;
+
+	&:hover {
+		box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+	}
+}
+
+.file-schedule__title {
+	font-weight: 400;
+	font-size: 20px;
+	letter-spacing: 0.01em;
+	line-height: 26px;
+	color: $placeholder;
+	padding: 12px 18px;
+}
+
+.file-schedule__icon {
+	width: 52px;
+	height: 50px;
+	order: -1;
+	position: relative;
+	display: flex;
+	justify-content: center;
+
+	padding-top: 2px;
+	padding-right: 10px;
+
+	&::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		width: 1.3px;
+		background: $lightBorder;
+	}
+}
+
+.file-schedule__svg {
+	margin: auto;
+}
