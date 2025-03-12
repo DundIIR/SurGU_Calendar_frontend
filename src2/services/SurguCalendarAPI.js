@@ -3,7 +3,7 @@ import CustomError from './CustomError'
 
 class SurguCalendarAPI {
 	constructor(providerToken) {
-		this.backendUrl = import.meta.env.VITE_BACKEND_URL_DEV
+		this.backendUrl = 'https://surgu-calendar.ru'
 	}
 
 	updateUserRole = async (token, email, role) => {
