@@ -1,0 +1,69 @@
+// Шаблоны
+
+// %tplborder {
+// 	border-bottom: 5px solid red;
+// }
+
+// .header {
+// 	@extend %tplborder;
+// }
+
+.visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	clip: rect(0 0 0 0);
+	overflow: hidden;
+}
+
+.page {
+	font-size: 16px;
+}
+
+body {
+	font-family: $font-base !important;
+	font-weight: $fw-regular;
+	background-color: $background !important;
+	color: $text !important;
+
+	padding-top: 20px;
+}
+
+.button {
+	padding: 14px 30px;
+	background: $text;
+	color: $white;
+	text-align: center;
+	border-radius: 12px;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.container {
+	width: 100%;
+	max-width: 100% !important;
+	margin: 0 auto;
+
+	@include mediaTablet {
+		max-width: 540px !important;
+	}
+
+	@include mediaDesktop {
+		max-width: 800px !important;
+	}
+
+	@include mediaUltraDesktop {
+		max-width: 1300px !important;
+	}
+}
+
+// .page {
+// 	width: 100%;
+// 	min-height: 100vh;
+// 	display: flex;
+// 	flex-direction: column;
+// 	justify-content: space-between;
+// 	row-gap: 50px;
+// }

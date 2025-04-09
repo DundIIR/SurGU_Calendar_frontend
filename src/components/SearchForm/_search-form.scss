@@ -1,0 +1,101 @@
+@import '../../scss/base/vars';
+
+.search-form {
+	position: relative;
+	padding: 20px;
+	background-color: $white;
+
+	width: calc(100% - 100% / 15);
+	height: 60px;
+
+	display: flex;
+	gap: 10px;
+	justify-content: space-between;
+	align-items: center;
+	border-radius: 50px;
+
+	box-shadow: 0 4px 10px 1px rgba(100, 100, 100, 0.09);
+
+	.label__input {
+		display: flex;
+		padding: 15px 0;
+		flex-grow: 1;
+	}
+
+	&__input {
+		font-size: 20px;
+		height: 20px;
+		color: $text;
+		width: 100%;
+		padding: 0 4px;
+		margin-right: 10px;
+		border-bottom: 0.5px solid $placeholder-light;
+
+		&::placeholder {
+			color: $placeholder;
+		}
+	}
+	&__button {
+		display: block;
+		width: 18px;
+		height: 18px;
+		background-image: url('../../img/search.svg');
+		background-size: contain;
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+}
+
+.search-results-container {
+	position: absolute;
+	top: 65px;
+	left: 30px;
+	right: 30px;
+	background-color: #fff;
+	box-shadow: 0 4px 10px 1px rgba(0, 0, 0, 0.1);
+	max-height: 200px;
+	overflow-y: auto;
+	border-radius: 8px;
+
+	&::-webkit-scrollbar {
+		width: 3px; /* Ширина всего элемента навигации */
+		transform: translateX(-4px); /* Сдвигаем прокрутку влево */
+		margin-right: -10px;
+	}
+
+	&::-webkit-scrollbar-track {
+		margin: 20px 0;
+		background: $placeholder-light; /* Цвет дорожки */
+		border-radius: 10px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: $text-light; /* Цвет бегунка */
+		border-radius: 20px; /* Округление бегунка */
+	}
+}
+
+.search-results {
+	display: flex;
+	flex-direction: column;
+}
+
+.search-results__item {
+	padding: 10px 15px;
+	text-align: start;
+	cursor: pointer;
+
+	-webkit-tap-highlight-color: transparent;
+
+	@media (hover: hover) {
+		&:hover {
+			background-color: rgba($color: $placeholder, $alpha: 0.04);
+		}
+	}
+
+	@media (hover: none) {
+		&:active {
+			background-color: rgba($color: $placeholder, $alpha: 0.04);
+		}
+	}
+}

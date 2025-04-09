@@ -1,0 +1,82 @@
+@import '../../scss/base/vars';
+
+.slogan {
+	position: relative;
+	padding: 50px 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+
+	&::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		top: -70px;
+		width: 250px;
+		height: calc(100% + 80px);
+		background-image: url('../../img/bg-linie-punktierte.svg');
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: contain;
+		z-index: -2;
+	}
+
+	&__badge {
+		position: relative;
+		padding: 15px 30px;
+		text-align: center;
+		line-height: 20px;
+		margin-bottom: 50px;
+
+		&::after {
+			content: '';
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			width: 100%;
+			height: 100%;
+			background-image: url('../../img/bg-linie.svg');
+			background-repeat: no-repeat;
+			background-position: center;
+			background-size: contain;
+			z-index: -1;
+		}
+	}
+
+	&__title {
+		font-family: $font-title;
+		font-weight: 900;
+		font-size: 36px;
+		line-height: 32px;
+		letter-spacing: -1px;
+		text-align: center;
+		width: 330px;
+		padding-bottom: 10px;
+	}
+
+	&__highlight {
+		font-family: $font-base;
+		font-weight: $fw-bold;
+		font-size: 40px;
+
+		&--green {
+			color: $green;
+		}
+
+		&--blue {
+			color: $blue;
+		}
+	}
+
+	&__subtitle {
+		font-size: 18px;
+		color: $text-light;
+		text-align: center;
+		width: 270px;
+		margin-top: -20px;
+
+		margin-bottom: 50px;
+	}
+}
