@@ -1,60 +1,84 @@
-// import Header from '../components/Header/Header'
-// import Footer from '../components/Footer/Footer'
-// import FileSchedule from '../components/FileSchedule/FileSchedule'
-// import Slogan from '../components/Slogan/Slogan'
-// import Instruction from '../components/Instruction/Instruction'
-import { useNavigate } from 'react-router-dom'
-import { useSession, useSupabaseClient, useSessionContext } from '@supabase/auth-helpers-react'
+import { useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
+import { Spinner, useToast } from '@chakra-ui/react'
 import Header from '../components/Header/Header'
 import Slogan from '../components/Slogan/Slogan'
-import { Spinner } from '@chakra-ui/react'
-import { useEffect, useState } from 'react'
 
 const DefaultPage = () => {
-	// { updateSchedule, searches, setSearches }
 	const session = useSession()
-	const { isLoading } = useSessionContext()
-
-	let navigate = useNavigate()
-
+	const navigate = useNavigate()
+	const location = useLocation()
 	const supabase = useSupabaseClient()
+	const toast = useToast()
+
+	// 1. Функция входа через Google
 	const googleSignIn = async () => {
 		try {
 			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
 					scopes: 'https://www.googleapis.com/auth/calendar',
+					redirectTo: window.location.origin,
 				},
 			})
 			if (error) throw error
 		} catch (error) {
-			alert(error)
+			toast({
+				title: 'Ошибка входа',
+				description: error.message,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			})
 		}
 	}
-	const signOut = async e => {
-		e.preventDefault()
-		await supabase.auth.signOut()
-		setLoading(false)
-	}
 
-	if (isLoading) {
-		return (
-			<>
-				<Spinner />
-			</>
-		)
+	// 2. Проверка и обновление сессии
+	useEffect(() => {
+		// Проверяем сессию при загрузке
+		const checkSession = async () => {
+			const {
+				data: { session },
+			} = await supabase.auth.getSession()
+			if (session) {
+				navigate('/home') // Перенаправляем если уже авторизован
+			}
+		}
+
+		checkSession()
+
+		// Подписываемся на изменения аутентификации
+		const {
+			data: { subscription },
+		} = supabase.auth.onAuthStateChange((event, session) => {
+			if (event === 'SIGNED_IN') {
+				navigate('/home')
+			}
+			if (event === 'TOKEN_REFRESHED') {
+				console.log('Токен обновлён')
+			}
+			if (event === 'SIGNED_OUT') {
+				console.log('Вы вышли из системы')
+			}
+		})
+
+		return () => subscription.unsubscribe()
+	}, [navigate, supabase])
+
+	// 3. Если сессия есть, перенаправляем
+	if (session) {
+		navigate('/home')
+		return <Spinner />
 	}
 
 	return (
-		<>
-			<div className="container">
-				<Header googleBtn={googleSignIn}></Header>
-			</div>
-
+		<div className="container">
+			<Header googleBtn={googleSignIn} />
 			<main className="main container">
-				<Slogan></Slogan>
+				<Slogan />
 			</main>
-		</>
+		</div>
 	)
 }
 
