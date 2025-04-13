@@ -12,6 +12,7 @@ const Header = ({ googleBtn }) => {
 			<a className="header__logo">
 				<img src={logo} alt="СурГУ Календарь" width="148" heihgt="30" />
 			</a>
+			<span>{session?.user.user_metadata.full_name}</span>
 			<button className="menu-btn" onClick={e => googleBtn(e)}>
 				<span className={`menu-btn__icon ${session ? 'menu-btn__icon--logout' : ''}`}></span>
 			</button>

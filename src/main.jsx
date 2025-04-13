@@ -11,7 +11,13 @@ import './scss/main.scss'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabase = createClient(supabaseUrl, supabaseKey, {
+	auth: {
+		autoRefreshToken: true,
+		persistSession: true,
+		detectSessionInUrl: true,
+	},
+})
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 	<ChakraProvider resetCSS={false}>
