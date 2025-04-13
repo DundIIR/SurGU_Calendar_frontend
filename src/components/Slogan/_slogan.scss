@@ -1,4 +1,5 @@
 @import '../../scss/base/vars';
+@import '../../scss/base/mixins';
 
 .slogan {
 	position: relative;
@@ -43,23 +44,40 @@
 			background-size: contain;
 			z-index: -1;
 		}
+
+		@include mediaDesktop {
+			font-size: 18px;
+			&::after {
+				width: 120%;
+				height: 120%;
+			}
+		}
 	}
 
 	&__title {
 		font-family: $font-title;
-		font-weight: 900;
+		font-weight: $fw-bold;
 		font-size: 36px;
 		line-height: 32px;
 		letter-spacing: -1px;
 		text-align: center;
 		width: 330px;
 		padding-bottom: 10px;
+
+		@include mediaDesktop {
+			font-size: 46px;
+			line-height: 4rem;
+			width: 800px;
+		}
 	}
 
 	&__highlight {
 		font-family: $font-base;
-		font-weight: $fw-bold;
-		font-size: 40px;
+		font-weight: 700;
+		font-size: inherit;
+		@include mediaDesktop {
+			font-size: 64px;
+		}
 
 		&--green {
 			color: $green;
@@ -78,5 +96,12 @@
 		margin-top: -20px;
 
 		margin-bottom: 50px;
+
+		@include mediaDesktop {
+			font-size: 22px;
+			line-height: 22px;
+			width: 350px;
+			margin-top: 0;
+		}
 	}
 }

@@ -21,6 +21,9 @@
 
 .page {
 	font-size: 16px;
+	@include mediaDesktop {
+		font-size: 20px;
+	}
 }
 
 body {

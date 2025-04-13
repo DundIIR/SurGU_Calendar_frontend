@@ -76,23 +76,28 @@ const SearchForm = () => {
 	const filteredProfessors = professors.filter(prof => prof.toLowerCase().includes(fieldSearch.toLowerCase()))
 
 	const handleSelectItem = item => {
+		console.log('клик')
 		setFieldSearch(item) // Устанавливаем выбранное значение в input
 		setSearchQuery(item) // Сохраняем в результат поиска
 		setIsOpen(true) // Открываем BottomSheet
-		setShowSuggestions(false) // Скрываем подсказки
+		// setShowSuggestions(false) // Скрываем подсказки
 		setFieldSearch('')
 	}
 
 	// Компонент для отображения результатов поиска
-	const SearchResults = ({ items }) => (
-		<div className="search-results">
-			{items.slice(0, 10).map((item, index) => (
-				<button key={index} className="search-results__item" onClick={() => handleSelectItem(item)}>
-					{item}
-				</button>
-			))}
-		</div>
-	)
+	const SearchResults = ({ items }) => {
+		console.log('список', items)
+
+		return (
+			<div className="search-results">
+				{items.slice(0, 10).map((item, index) => (
+					<button key={index} className="search-results__item" onMouseDown={() => handleSelectItem(item)}>
+						{item}
+					</button>
+				))}
+			</div>
+		)
+	}
 
 	const handleSubmit = e => {
 		e.preventDefault()
@@ -114,7 +119,7 @@ const SearchForm = () => {
 						className="search-form__input"
 						placeholder="xxx-хх..."
 						onFocus={() => setShowSuggestions(true)} // Показываем подсказку при фокусе
-						onBlur={() => setTimeout(() => setShowSuggestions(false), 10)}
+						onBlur={() => setShowSuggestions(false)}
 					/>
 				</label>
 				{showSuggestions && fieldSearch && (
