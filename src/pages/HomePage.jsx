@@ -3,41 +3,47 @@
 // import FileSchedule from '../components/FileSchedule/FileSchedule'
 // import Slogan from '../components/Slogan/Slogan'
 // import Instruction from '../components/Instruction/Instruction'
-// import { useNavigate } from 'react-router-dom'
-// import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
-// import { Container, Heading } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+import { useSession, useSupabaseClient, useSessionContext } from '@supabase/auth-helpers-react'
+import Header from '../components/Header/Header'
+import Slogan from '../components/Slogan/Slogan'
+import { Spinner } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
 
-// const HomePage = ({ updateSchedule, searches, setSearches }) => {
-// 	const session = useSession()
-// 	const supabase = useSupabaseClient()
+const HomePage = () => {
+	// { updateSchedule, searches, setSearches }
+	const session = useSession()
+	const { isLoading } = useSessionContext()
 
-// 	const user = session.user.user_metadata.name
+	let navigate = useNavigate()
 
-// 	let navigate = useNavigate()
+	const supabase = useSupabaseClient()
 
-// 	const signOut = async e => {
-// 		e.preventDefault()
-// 		await supabase.auth.signOut()
-// 		navigate('/')
-// 	}
+	const signOut = async e => {
+		e.preventDefault()
+		await supabase.auth.signOut()
+		// setLoading(false)
+	}
 
-// 	return (
-// 		<div className="page">
-// 			<Header googleBtn={signOut} updateSchedule={updateSchedule} />
-// 			<Container maxW="1820px" my={-6}>
-// 				<Heading fontSize="38px" color={'#484848'} fontWeight={500}>
-// 					Привет, {user}
-// 				</Heading>
-// 			</Container>
-// 			<main className="page-main">
-// 				<h1 className="visually-hidden">SurGU Календарь - новое расписание СурГУ</h1>
-// 				<Instruction />
-// 				<Slogan />
-// 				<FileSchedule searches={searches} setSearches={setSearches} />
-// 			</main>
-// 			<Footer />
-// 		</div>
-// 	)
-// }
+	if (isLoading) {
+		return (
+			<>
+				<Spinner />
+			</>
+		)
+	}
 
-// export default HomePage
+	return (
+		<>
+			<div className="container">
+				<Header googleBtn={signOut}></Header>
+			</div>
+
+			<main className="main container">
+				<Slogan></Slogan>
+			</main>
+		</>
+	)
+}
+
+export default HomePage

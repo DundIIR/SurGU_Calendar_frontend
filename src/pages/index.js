@@ -1,5 +1,5 @@
-// import HomePage from './HomePage'
+import HomePage from './HomePage'
 import DefaultPage from './DefaultPage'
-// import AdminPage from './AdminPage'
+import AdminPage from './AdminPage'
 
-export { DefaultPage }
+export { DefaultPage, HomePage, AdminPage }

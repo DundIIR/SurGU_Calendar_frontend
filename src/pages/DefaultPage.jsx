@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom'
 import { useSession, useSupabaseClient, useSessionContext } from '@supabase/auth-helpers-react'
 import Header from '../components/Header/Header'
 import Slogan from '../components/Slogan/Slogan'
+import { Spinner } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
 
 const DefaultPage = () => {
 	// { updateSchedule, searches, setSearches }
@@ -29,11 +31,24 @@ const DefaultPage = () => {
 			alert(error)
 		}
 	}
+	const signOut = async e => {
+		e.preventDefault()
+		await supabase.auth.signOut()
+		setLoading(false)
+	}
+
+	if (isLoading) {
+		return (
+			<>
+				<Spinner />
+			</>
+		)
+	}
 
 	return (
 		<>
 			<div className="container">
-				<Header></Header>
+				<Header googleBtn={googleSignIn}></Header>
 			</div>
 
 			<main className="main container">

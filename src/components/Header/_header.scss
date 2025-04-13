@@ -25,5 +25,9 @@
 			background-position: center;
 			background-repeat: no-repeat;
 		}
+
+		&__icon--logout {
+			background-image: url('../../img/logout-btn.svg');
+		}
 	}
 }
