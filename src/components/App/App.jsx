@@ -3,6 +3,7 @@ import { DefaultPage, HomePage, AdminPage } from '../../pages'
 import { useEffect, useState } from 'react'
 import { useSession, useSessionContext, useSupabaseClient } from '@supabase/auth-helpers-react'
 import SurguCalendarAPI from '../../services/SurguCalendarAPI'
+import useValidation from '../../hooks/useValidation'
 
 const App = () => {
 	const session = useSession()
@@ -10,6 +11,7 @@ const App = () => {
 	const [role, setRole] = useState(null)
 	const [isRoleLoading, setIsRoleLoading] = useState(true)
 	const [searches, setSearches] = useState([])
+	const { user, loading, error } = useValidation(session)
 
 	const updateSchedule = () => {
 		const storedSearches = JSON.parse(localStorage.getItem('searches')) || []
@@ -21,25 +23,12 @@ const App = () => {
 	}, [])
 
 	useEffect(() => {
-		const validateUserRole = async () => {
-			if (session) {
-				try {
-					const surguCalendarAPI = new SurguCalendarAPI()
-					const data = await surguCalendarAPI.validateToken(session.access_token)
-					setRole(data.user.role)
-				} catch (error) {
-					console.error('Ошибка валидации токена:', error)
-				} finally {
-					setIsRoleLoading(false)
-				}
-			} else {
-				setIsRoleLoading(false)
-			}
+		if (user) {
+			setRole(user.role)
 		}
-		validateUserRole()
-	}, [session])
+	}, [user])
 
-	if (isLoading || isRoleLoading || role === null) {
+	if (isLoading || loading || role === null) {
 		return 'Загрузка'
 	}
 
