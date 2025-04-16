@@ -148,21 +148,51 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 		}
 	}
 
-	const handleAddToCalendar = () => {
-		if (session && session.provider_token) {
-			console.log('Запрос отправлен')
-			const googleCalendarAPI = new GoogleCalendarAPI(session.provider_token)
-			googleCalendarAPI.importSchedule(title, setProgress, setError)
-			// setBody('Расписание добавлено')
-			// console.log(title)
-			// const temp = new SurguCalendarAPI()
-			// console.log(temp.getSchedule(title))
-		} else {
+	const handleAddToCalendar = async () => {
+		try {
+			if (!session?.provider_token) {
+				throw new Error('Требуется авторизация')
+			}
+
+			const api = new SurguCalendarAPI()
+
+			// Получаем расписание
+			const { lessons } = await api.getSchedule(
+				query.group,
+				query.subgroup || undefined, // передаем только если есть подгруппа
+				undefined, // professors не передаем
+			)
+
+			if (!lessons || lessons.length === 0) {
+				throw new Error('Расписание не найдено')
+			}
+
+			// Создаем экземпляр API для Google Calendar
+			// const googleCalendarAPI = new GoogleCalendarAPI(session.provider_token)
+
+			// // Импортируем расписание
+			// await googleCalendarAPI.importSchedule(
+			// 	query.group + (query.subgroup ? `-${query.subgroup}` : ''),
+			// 	lessons,
+			// 	setProgress,
+			// 	setError,
+			// )
+
 			toast({
-				title: 'Упс... Проблема',
-				description: 'Вам нужно перезайти в аккаунт',
+				title: 'Успешно',
+				description: 'Расписание добавлено в календарь',
+				status: 'success',
+				duration: 5000,
+				isClosable: true,
+			})
+		} catch (error) {
+			console.error('Ошибка добавления в календарь:', error)
+
+			toast({
+				title: 'Ошибка',
+				description: error.message || 'Не удалось добавить расписание',
 				status: 'error',
-				duration: 3500,
+				duration: 5000,
 				isClosable: true,
 			})
 		}
