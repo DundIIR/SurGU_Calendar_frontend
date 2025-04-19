@@ -44,6 +44,7 @@ class SurguCalendarAPI {
 
 			const response = await axios.get('/api/schedule/', { params })
 
+			console.log(response)
 			if (!response.data.success) {
 				throw new CustomError(response.data.error, {
 					status: response.status,
@@ -51,14 +52,13 @@ class SurguCalendarAPI {
 				})
 			}
 
-			return response.data.results
+			return response.data
 		} catch (error) {
 			if (error.response) {
 				// Ошибка от API
 				throw new CustomError(error.response.data?.error || 'Ошибка запроса', {
 					status: error.response.status,
 					details: error.response.data?.details,
-					cause: error,
 				})
 			} else {
 				// Сетевая ошибка
@@ -160,7 +160,7 @@ class SurguCalendarAPI {
 
 	validateToken = async token => {
 		try {
-			const response = await axios.get('/api/validate-token/', {
+			const response = await axios.get('/api/validate-token/V2/', {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
