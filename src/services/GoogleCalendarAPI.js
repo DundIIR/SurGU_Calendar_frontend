@@ -13,7 +13,6 @@ class GoogleCalendarAPI {
 
 	async createCalendar(summary) {
 		try {
-			console.log('календарь начал создаваться')
 			const response = await axios.post(
 				`${this.calendarBaseUrl}/calendars`,
 				{ summary, timeZone: this.timeZone },
@@ -25,17 +24,41 @@ class GoogleCalendarAPI {
 				},
 			)
 
-			// console.log(response.data)
-			console.log('Календарь создан')
 			return response.data
 		} catch (error) {
 			console.error('Ошибка при создании календаря: ', error)
-			throw new CustomError('Не получилось создать календарь;Попробуй обратиться в службу поддержки')
+			throw new CustomError('Не получилось создать календарь', { details: 'Попробуй обратиться в службу поддержки' })
 		}
 	}
 
-	async createEvent(calendarId, event, setProgress) {
+	async createEvent(calendarId, lesson) {
 		try {
+			const start = this.formatDateTime(lesson.datetime_start_lesson)
+			const end = this.formatDateTime(lesson.datetime_end_lesson)
+			const until = lesson.repetition
+			const interval = lesson.interval ? `;INTERVAL=${lesson.interval}` : ''
+			let colorId = 0
+			// if (lesson.summary != summary) {
+			// 	summary = lesson.summary
+			// 	colorId = colorId === 12 ? 0 : colorId + 1
+			// }
+
+			const event = {
+				summary: lesson.summary,
+				location: lesson.location,
+				description: lesson.description,
+				colorId: colorId,
+				start: {
+					dateTime: start,
+					timeZone: this.timeZone,
+				},
+				end: {
+					dateTime: end,
+					timeZone: this.timeZone,
+				},
+				recurrence: [`RRULE:FREQ=WEEKLY;UNTIL=${until}${interval}`],
+			}
+
 			const response = await axios.post(`${this.calendarBaseUrl}/calendars/${calendarId}/events`, event, {
 				headers: {
 					Authorization: `Bearer ${this.providerToken}`,
@@ -43,15 +66,6 @@ class GoogleCalendarAPI {
 				},
 			})
 
-			// console.log(response.data)
-			const progressPercentage = Math.floor((++this.importedEvents / this.totalEvents) * 100)
-			setProgress(progressPercentage)
-			if (this.importedEvents == this.totalEvents) {
-				setTimeout(() => {
-					setProgress(0)
-				}, 2000)
-			}
-			console.log('Событие создано')
 			return response.data
 		} catch (error) {
 			console.error('Ошибка при создании события: ', error)
@@ -123,7 +137,7 @@ class GoogleCalendarAPI {
 			)
 		} catch (error) {
 			console.log('Ошибка в полученных данных: ', dateTime)
-			throw new CustomError('Получены плохие данные от сервера;Попробуй обратиться в службу поддержки или зайти позже')
+			throw new CustomError('Получены плохие данные от сервера', { details: 'Попробуй обратиться в службу поддержки' })
 		}
 	}
 }

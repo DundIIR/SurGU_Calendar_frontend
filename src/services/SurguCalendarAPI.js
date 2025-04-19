@@ -33,6 +33,42 @@ class SurguCalendarAPI {
 		}
 	}
 
+	// Метода для получения занятий по группе, подгруппе, преподавателю
+	getScheduleV2 = async (group = '', subgroup = '', professors = '') => {
+		try {
+			const params = {}
+
+			if (group) params.group = group
+			if (subgroup) params.subgroup = subgroup
+			if (professors) params.professors = professors
+
+			const response = await axios.get('/api/schedule/', { params })
+
+			console.log(response)
+			if (!response.data.success) {
+				throw new CustomError(response.data.error, {
+					status: response.status,
+					details: response.data.details,
+				})
+			}
+
+			return response.data
+		} catch (error) {
+			if (error.response) {
+				// Ошибка от API
+				throw new CustomError(error.response.data?.error || 'Ошибка запроса', {
+					status: error.response.status,
+					details: error.response.data?.details,
+				})
+			} else {
+				// Сетевая ошибка
+				throw new CustomError('Не удалось подключиться к серверу', {
+					cause: error,
+				})
+			}
+		}
+	}
+
 	// НЕ ИСПОЛЬЗУЕТСЯ
 	// Метод для проверки существования группы или преподавателя
 	getSearchCheck = async query => {
@@ -61,23 +97,6 @@ class SurguCalendarAPI {
 			}
 
 			return response.data.file_url
-		} catch (error) {
-			console.error(error)
-			throw new CustomError('Ошибка запроса; Попробуйте снова или обратитесь в поддержку.')
-		}
-	}
-
-	getSchedule = async search => {
-		try {
-			const response = await axios.get('/api/schedule/', {
-				params: { search },
-			})
-
-			if (!response.data || response.data.length === 0) {
-				throw new CustomError('Расписание не найдено; Попробуй изменить запрос или обратись в поддержку.')
-			}
-
-			return response.data // Ожидаем, что бэкенд вернёт { group: "609-11", subgroups: ["A", "B"] }
 		} catch (error) {
 			console.error(error)
 			throw new CustomError('Ошибка запроса; Попробуйте снова или обратитесь в поддержку.')
@@ -141,7 +160,7 @@ class SurguCalendarAPI {
 
 	validateToken = async token => {
 		try {
-			const response = await axios.get('/api/validate-token/', {
+			const response = await axios.get('/api/validate-token/V2/', {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

@@ -1,9 +1,7 @@
 export default class CustomError extends Error {
-	constructor(message) {
-		super(message)
-		this.errorFormat = {
-			title: this.message.split(';')[0],
-			description: this.message.split(';')[1],
-		}
+	constructor(error, details, status) {
+		super(error)
+		this.status = status
+		this.details = details
 	}
 }

@@ -26,6 +26,7 @@ import './_bottom-sheet.scss'
 import { useSelector } from 'react-redux'
 import SurguCalendarAPI from '../../../services/SurguCalendarAPI'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
+import GoogleCalendarAPI from '../../../services/GoogleCalendarAPI'
 
 const normalizeSearchQuery = query => {
 	const match = query.match(/^([0-9\-]+)([а-я])?$/i)
@@ -49,6 +50,10 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 	// Состояние для модалки
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [firstTimeUser, setFirstTimeUser] = useState(Boolean(localStorage.getItem('modal_shown')))
+
+	// Состояния загрузки расписания
+	const [loadingStatus, setLoadingStatus] = useState('')
+	const [isLoading, setIsLoading] = useState(false)
 
 	const query = normalizeSearchQuery(searchQuery)
 	const groups = useSelector(state => state.api.groups)
@@ -87,6 +92,8 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 		}
 		if (isOpen && searchQuery) {
 			setLoading(true)
+			setIsLoading(false)
+			setLoadingStatus('')
 			const groupData = groups[query.group]
 			if (groupData) {
 				if (query.subgroup) setSelectedValue(query.subgroup)
@@ -148,21 +155,56 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 		}
 	}
 
-	const handleAddToCalendar = () => {
-		if (session && session.provider_token) {
-			console.log('Запрос отправлен')
+	const handleAddToCalendar = async () => {
+		try {
+			setIsLoading(true)
+
+			if (!session?.provider_token) {
+				throw new Error('Требуется перезайти в аккаунт')
+			}
+
+			const api = new SurguCalendarAPI()
+
+			// Получаем расписание
+			setLoadingStatus('Получаем расписание...')
+			const { results, count } = await api.getScheduleV2(query.group, query.subgroup || undefined, undefined)
+
+			if (!results || count === 0) {
+				throw new Error('Расписание не найдено')
+			}
+
+			// Создаем экземпляр API для Google Calendar
+			setLoadingStatus('Создаем календарь...')
 			const googleCalendarAPI = new GoogleCalendarAPI(session.provider_token)
-			googleCalendarAPI.importSchedule(title, setProgress, setError)
-			// setBody('Расписание добавлено')
-			// console.log(title)
-			// const temp = new SurguCalendarAPI()
-			// console.log(temp.getSchedule(title))
-		} else {
+			const calendarName = query.group + (query.subgroup ? `${query.subgroup}` : '')
+			const calendar = await googleCalendarAPI.createCalendar(calendarName)
+
+			// Добавляем занятия с прогрессом
+			setLoadingStatus(`Добавляем занятия 0/${count}`)
+
+			for (let i = 0; i < count; i++) {
+				try {
+					await googleCalendarAPI.createEvent(calendar.id, results[i])
+					setLoadingStatus(`Добавляем занятия ${i + 1}/${count}`)
+				} catch (error) {
+					console.error(`Ошибка при добавлении занятия ${i + 1}:`, error)
+				}
+			}
+			// toast({
+			// 	title: 'Успешно',
+			// 	description: 'Расписание добавлено в календарь',
+			// 	status: 'success',
+			// 	duration: 5000,
+			// 	isClosable: true,
+			// })
+		} catch (error) {
+			console.error('Ошибка добавления в календарь:', error)
+			setIsLoading(false)
 			toast({
-				title: 'Упс... Проблема',
-				description: 'Вам нужно перезайти в аккаунт',
+				title: 'Ошибка',
+				description: error.message || 'Не удалось добавить расписание',
 				status: 'error',
-				duration: 3500,
+				duration: 5000,
 				isClosable: true,
 			})
 		}
@@ -226,6 +268,11 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 									<br />
 									обратитесь в поддержку
 								</p>
+							</div>
+						) : isLoading ? (
+							<div className="loading-indicator">
+								<Spinner className="spinner" />
+								<p>{loadingStatus}</p>
 							</div>
 						) : (
 							<>
