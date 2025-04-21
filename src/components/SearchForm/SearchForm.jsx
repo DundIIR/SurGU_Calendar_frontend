@@ -76,7 +76,6 @@ const SearchForm = () => {
 	const filteredProfessors = professors.filter(prof => prof.toLowerCase().includes(fieldSearch.toLowerCase()))
 
 	const handleSelectItem = item => {
-		console.log('клик')
 		setFieldSearch(item) // Устанавливаем выбранное значение в input
 		setSearchQuery(item) // Сохраняем в результат поиска
 		setIsOpen(true) // Открываем BottomSheet
@@ -86,8 +85,6 @@ const SearchForm = () => {
 
 	// Компонент для отображения результатов поиска
 	const SearchResults = ({ items }) => {
-		console.log('список', items)
-
 		return (
 			<div className="search-results">
 				{items.slice(0, 10).map((item, index) => (
