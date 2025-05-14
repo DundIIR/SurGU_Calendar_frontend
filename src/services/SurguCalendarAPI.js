@@ -2,6 +2,10 @@ import axios from 'axios'
 import CustomError from './CustomError'
 
 class SurguCalendarAPI {
+	constructor(accessToken = '') {
+		this.accessToken = accessToken
+	}
+
 	// Метод для получения списка групп
 	getGroups = async () => {
 		try {
@@ -33,18 +37,24 @@ class SurguCalendarAPI {
 		}
 	}
 
-	// Метода для получения занятий по группе, подгруппе, преподавателю
-	getScheduleV2 = async (group = '', subgroup = '', professors = '') => {
+	// Метода для получения занятий по группе, подгруппе или преподавателю
+	getScheduleV2 = async (group = '', subgroup = '', professor = '', isChecked = false) => {
 		try {
 			const params = {}
 
 			if (group) params.group = group
 			if (subgroup) params.subgroup = subgroup
-			if (professors) params.professors = professors
+			if (professor) params.professor = professor
+			if (isChecked) params.shorten_names = isChecked
 
-			const response = await axios.get('/api/schedule/', { params })
+			const response = await axios.get('/api/schedule/', {
+				headers: {
+					Authorization: `Bearer ${this.accessToken}`,
+					'Content-Type': 'application/json',
+				},
+				params: params,
+			})
 
-			console.log(response)
 			if (!response.data.success) {
 				throw new CustomError(response.data.error, {
 					status: response.status,
@@ -63,7 +73,49 @@ class SurguCalendarAPI {
 			} else {
 				// Сетевая ошибка
 				throw new CustomError('Не удалось подключиться к серверу', {
-					cause: error,
+					details: error,
+				})
+			}
+		}
+	}
+
+	// Метода для получения ссылки на скачивания файла с расписанием по группе, подгруппе или преподавателю
+	getScheduleFile = async (group = '', subgroup = '', professor = '', isChecked = false) => {
+		try {
+			const params = {}
+
+			if (group) params.group = group
+			if (subgroup) params.subgroup = subgroup
+			if (professor) params.professor = professor
+			if (isChecked) params.shorten_names = isChecked
+
+			const response = await axios.get('/api/file-schedule/', {
+				headers: {
+					Authorization: `Bearer ${this.accessToken}`,
+					'Content-Type': 'application/json',
+				},
+				params: params,
+			})
+
+			if (!response.data.success) {
+				throw new CustomError(response.data.error, {
+					status: response.status,
+					details: response.data.details,
+				})
+			}
+
+			return response.data.results
+		} catch (error) {
+			if (error.response) {
+				// Ошибка от API
+				throw new CustomError(error.response.data?.error || 'Ошибка запроса', {
+					status: error.response.status,
+					details: error.response.data?.details,
+				})
+			} else {
+				// Сетевая ошибка
+				throw new CustomError('Не удалось подключиться к серверу', {
+					details: error,
 				})
 			}
 		}
@@ -83,23 +135,6 @@ class SurguCalendarAPI {
 			return response.data
 		} catch (error) {
 			throw new CustomError('Ошибка запроса; Не удалось найти данные.')
-		}
-	}
-
-	getScheduleFile = async (search, subgroup = null, professor = false) => {
-		try {
-			const response = await axios.get('/api/file-schedule/', {
-				params: { search, subgroup, professors: professor.toString() },
-			})
-
-			if (!response.data || !response.data.file_url) {
-				throw new CustomError('Файл не найден; Попробуй изменить запрос или обратись в поддержку.')
-			}
-
-			return response.data.file_url
-		} catch (error) {
-			console.error(error)
-			throw new CustomError('Ошибка запроса; Попробуйте снова или обратитесь в поддержку.')
 		}
 	}
 

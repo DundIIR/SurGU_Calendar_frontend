@@ -12,6 +12,7 @@ const SearchForm = () => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [searchQuery, setSearchQuery] = useState('')
 	const [showSuggestions, setShowSuggestions] = useState(false) // видимость подсказки
+	const [loading, setLoading] = useState(false)
 	const dispatch = useDispatch()
 	const api = new SurguCalendarAPI()
 	const toast = useToast()
@@ -20,12 +21,15 @@ const SearchForm = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
+				setLoading(true)
 				const groups = await api.getGroups()
 				dispatch(setGroups(groups))
 
 				const professors = await api.getProfessors()
 				dispatch(setProfessors(professors))
+				setLoading(false)
 			} catch (error) {
+				setLoading(false)
 				toast({
 					title: 'Ошибка при загрузке данных',
 					description: error.message || 'Не удалось загрузить данные. Попробуйте обновить страницу.',
@@ -127,7 +131,7 @@ const SearchForm = () => {
 				)}
 			</form>
 
-			<BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)} searchQuery={searchQuery}></BottomSheet>
+			<BottomSheet isOpen={isOpen} onClose={() => setIsOpen(false)} loadingData={loading} searchQuery={searchQuery}></BottomSheet>
 		</>
 	)
 }

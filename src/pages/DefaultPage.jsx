@@ -4,6 +4,7 @@ import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Spinner, useToast } from '@chakra-ui/react'
 import Header from '../components/Header/Header'
 import Slogan from '../components/Slogan/Slogan'
+import LoadPage from './LoadPage'
 
 const DefaultPage = () => {
 	const session = useSession()
@@ -32,6 +33,11 @@ const DefaultPage = () => {
 				isClosable: true,
 			})
 		}
+	}
+
+	const signOut = async () => {
+		await supabase.auth.signOut()
+		// setLoading(false)
 	}
 
 	// 2. Проверка и обновление сессии
@@ -69,7 +75,9 @@ const DefaultPage = () => {
 	// 3. Если сессия есть, перенаправляем
 	if (session) {
 		navigate('/home')
-		return <Spinner />
+		return <LoadPage />
+	} else {
+		signOut()
 	}
 
 	return (

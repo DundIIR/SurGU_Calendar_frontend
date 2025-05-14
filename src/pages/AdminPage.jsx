@@ -70,6 +70,7 @@ import Header from '../components/Header/Header'
 import Slogan from '../components/Slogan/Slogan'
 import { Spinner } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
+import LoadPage from './LoadPage'
 
 const AdminPage = () => {
 	// { updateSchedule, searches, setSearches }
@@ -87,11 +88,7 @@ const AdminPage = () => {
 	}
 
 	if (isLoading) {
-		return (
-			<>
-				<Spinner />
-			</>
-		)
+		return <LoadPage />
 	}
 
 	return (

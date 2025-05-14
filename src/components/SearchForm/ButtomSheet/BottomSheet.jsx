@@ -1,20 +1,14 @@
 import {
 	Drawer,
-	DrawerBody,
-	DrawerHeader,
 	DrawerOverlay,
 	DrawerContent,
 	Stack,
-	Radio,
 	RadioGroup,
-	IconButton,
 	Spinner,
-	Toast,
 	useToast,
 	Modal,
 	ModalOverlay,
 	ModalContent,
-	ModalHeader,
 	ModalBody,
 	ModalFooter,
 	Button,
@@ -31,15 +25,31 @@ import GoogleCalendarAPI from '../../../services/GoogleCalendarAPI'
 // Функция для нормализации поискового запроса
 // Разбивает запрос на номер группы и подгруппу (если есть)
 const normalizeSearchQuery = query => {
+	if (query.match(/^[а-яa-z]/i)) {
+		return {
+			group: null,
+			subgroup: null,
+			professor: query,
+		}
+	}
+
 	const match = query.match(/^([0-9\-]+)([а-я])?$/i)
 
 	return {
 		group: match ? match[1] : query, // Основная часть (без буквы)
 		subgroup: match && match[2] ? match[2] : null, // Последняя буква или null
+		professor: null,
 	}
 }
 
-const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
+const reductionFIO = professor => {
+	return professor
+		?.split(' ')
+		.map((item, i) => (i >= 1 ? `${item[0]}.` : item))
+		.join(' ')
+}
+
+const BottomSheet = ({ isOpen, onClose, searchQuery, loadingData }) => {
 	const supabase = useSupabaseClient() // Клиент Supabase
 	const session = useSession() // Получение текущей сессии
 
@@ -58,9 +68,9 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 	const [firstTimeUser, setFirstTimeUser] = useState(Boolean(localStorage.getItem('modal_shown'))) // Флаг первичного открытия модалки
 
 	// Состояния для отображения прогресса загрузки
-	const [loadingStatus, setLoadingStatus] = useState('') // Статус загрузки
+	const [loadingStatus, setLoadingStatus] = useState('Ищем расписание') // Статус загрузки
 	const [notFound, setNotFound] = useState(false) // Флаг "не найдено"
-	const [loading, setLoading] = useState(false) // Флаг "идет загрузка"
+	const [loading, setLoading] = useState(loadingData) // Флаг "идет загрузка"
 
 	// 1. Функция входа через Google
 	const googleSignIn = async () => {
@@ -91,9 +101,11 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 			setSubgroupValue('0')
 			setNotFound(false)
 			setIsChecked(true)
+			setLoadingStatus('Ищем расписание')
 			setSubgroupOptions([{ value: '0', label: 'Всё расписание' }])
 		}
-		if (isOpen && searchQuery) {
+		if (isOpen && searchQuery && !loadingData) {
+			console.log(loadingData)
 			setLoading(true)
 			setLoadingStatus('')
 
@@ -108,12 +120,25 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 				setSubgroupOptions(formattedOptions)
 				setLoading(false)
 				setNotFound(false)
+			} else if (query.professor) {
+				const filteredProfessors = professors.filter(prof => prof.toLowerCase().includes(query.professor.toLowerCase()))
+				const formattedOptions = filteredProfessors.map(item => ({
+					value: item,
+					label: item,
+				}))
+				setSubgroupOptions(formattedOptions)
+				if (formattedOptions.length == 1) {
+					setSubgroupValue(formattedOptions[0].value)
+				}
+				setLoading(false)
+				setNotFound(false)
 			} else {
 				setLoading(false)
+				setLoadingStatus(`Такого расписания к сожалению не нашлось`)
 				setNotFound(true)
 			}
 		}
-	}, [isOpen])
+	}, [isOpen, loadingData])
 
 	const handleDownloadButton = () => {
 		if (!localStorage.getItem('modal_shown')) {
@@ -126,6 +151,7 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 	}
 
 	const handleAddToCalendar = async () => {
+		let loadingTimer, loadingTimer2
 		try {
 			setLoading(true)
 
@@ -133,24 +159,30 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 				throw new Error('Требуется перезайти в аккаунт')
 			}
 
-			const api = new SurguCalendarAPI()
+			const api = new SurguCalendarAPI(session.access_token)
 
 			// Получаем расписание
 			setLoadingStatus('Получаем расписание...')
 
 			// Устанавливаем таймер для проверки долгой загрузки
-			const loadingTimer = setTimeout(() => {
+			loadingTimer = setTimeout(() => {
 				setLoadingStatus('Возможно включен VPN, из-за этого время загрузки увеличивается...')
 			}, 5000)
 			// Устанавливаем таймер для проверки долгой загрузки
-			const loadingTimer2 = setTimeout(() => {
+			loadingTimer2 = setTimeout(() => {
 				setLoadingStatus('Осталось еще чуть-чуть...')
 			}, 10000)
 
-			const { results, count } = await api.getScheduleV2(query.group, subgroupValue || undefined, undefined)
+			const { results, count } = await api.getScheduleV2(
+				query.group || undefined,
+				query.group ? subgroupValue : undefined,
+				query.professor ? subgroupValue : undefined,
+				isChecked,
+			)
 
 			// Если расписание получено, очищаем таймер
-			clearTimeout(loadingTimer, loadingTimer2)
+			clearTimeout(loadingTimer)
+			clearTimeout(loadingTimer2)
 
 			if (!results || count === 0) {
 				throw new Error('Расписание не найдено')
@@ -158,8 +190,10 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 
 			// Создаем экземпляр API для Google Calendar
 			setLoadingStatus('Создаем календарь...')
-			const googleCalendarAPI = new GoogleCalendarAPI(session.provider_token)
-			const calendarName = query.group + (subgroupValue ? `${subgroupValue}` : '')
+			const googleCalendarAPI = new GoogleCalendarAPI(session.provider_token, query.group ? subgroupValue : undefined)
+			const calendarName = query.group
+				? query.group + (subgroupValue !== '0' ? `${subgroupValue}` : '')
+				: reductionFIO(subgroupValue)
 			const calendar = await googleCalendarAPI.createCalendar(calendarName)
 
 			// Добавляем занятия с прогрессом
@@ -174,15 +208,17 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 				}
 			}
 			toast({
-				title: 'Успешно',
-				description: 'Расписание добавлено в календарь',
+				title: 'Расписание успешно добавлено в календарь',
+				description: <a href="/">следуйте инструкции</a>,
 				status: 'success',
-				duration: 5000,
+				duration: 6000,
 				isClosable: true,
 			})
 		} catch (error) {
+			clearTimeout(loadingTimer)
+			clearTimeout(loadingTimer2)
 			console.error('Ошибка добавления в календарь:', error)
-			setLoadingStatus(`Возникла ошибка при добавлении расписания, ${error}`)
+			setLoadingStatus(`Возникла ошибка при добавлении расписания: ${error}`)
 			setNotFound(true)
 		} finally {
 			setLoading(false)
@@ -190,35 +226,54 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 	}
 
 	const downloadScheduleFile = async () => {
+		let loadingTimer, loadingTimer2
 		try {
 			setIsModalOpen(false)
 			setLoading(true) // Включаем индикатор загрузки
 			const api = new SurguCalendarAPI()
 
-			const fileUrl = await api.getScheduleFile(query.group, query.subgroup) // Используем API для получения URL файла
-			console.log(fileUrl)
+			// Получаем расписание
+			setLoadingStatus('Получаем расписание...')
+
+			// Устанавливаем таймер для проверки долгой загрузки
+			loadingTimer = setTimeout(() => {
+				setLoadingStatus('Формируем файл...')
+			}, 2000)
+			// Устанавливаем таймер для проверки долгой загрузки
+			loadingTimer2 = setTimeout(() => {
+				setLoadingStatus('Осталось еще чуть-чуть...')
+			}, 7000)
+
+			const fileUrl = await api.getScheduleFile(
+				query.group || undefined,
+				query.group ? subgroupValue : undefined,
+				query.professor ? subgroupValue : undefined,
+				isChecked,
+			) // Используем API для получения URL файла
 
 			// Открытие файла
 			window.open(fileUrl, '_blank')
 
+			clearTimeout(loadingTimer)
+			clearTimeout(loadingTimer2)
+
 			setLoading(false) // Отключаем индикатор загрузки
 
 			toast({
-				title: 'Успешно',
-				description: 'Файл скачен, следуйте инструкции',
+				title: 'Файл успешно скачен',
+				description: 'следуйте инструкции',
 				status: 'success',
-				duration: 5000,
+				duration: 6000,
 				isClosable: true,
 			})
 		} catch (error) {
-			setLoading(false) // Отключаем индикатор загрузки
-			toast({
-				title: 'Ошибка',
-				description: error.message || 'Не удалось скачать файл. Попробуйте снова.',
-				status: 'error',
-				duration: 5000,
-				isClosable: true,
-			})
+			console.error('Ошибка скачивания файла:', error)
+			setLoadingStatus(`Возникла ошибка при скачивании файла: ${error}`)
+			setNotFound(true)
+		} finally {
+			setLoading(false)
+			clearTimeout(loadingTimer)
+			clearTimeout(loadingTimer2)
 		}
 	}
 
@@ -228,19 +283,19 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 				<DrawerOverlay />
 				<DrawerContent className="container" minH="500px" borderRadius="30px 30px 0 0" p="24px">
 					<header className="drawer-header">
-						<span className="drawer-title">{query.group}</span>
+						<span className="drawer-title">{query.group || reductionFIO(query.professor)}</span>
 						<button onClick={onClose} className="close-btn">
 							<img src={closeIcon} />
 						</button>
 					</header>
 
 					<section className="drawer-body">
-						{notFound ? (
+						{notFound && !loadingData ? (
 							<div className="no-results">
 								<img src={errorIcon} />
 								<p>{loadingStatus}</p>
 							</div>
-						) : loading ? (
+						) : loading || loadingData ? (
 							<div className="loading-indicator">
 								<Spinner className="spinner" />
 								<p>{loadingStatus}</p>
@@ -248,7 +303,7 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 						) : (
 							<>
 								<RadioGroup onChange={setSubgroupValue} value={subgroupValue}>
-									<Stack gap={1}>
+									<Stack gap={1} className="overflow-y-auto max-h-[350px] !mb-5">
 										{subgroupOptions.map(subgroup => (
 											<label key={subgroup.value} className={`custom-radio ${subgroupValue === subgroup.value ? 'active' : ''}`}>
 												<input
@@ -272,20 +327,36 @@ const BottomSheet = ({ isOpen, onClose, searchQuery }) => {
 											<span className="info-icon"></span>
 										</label>
 									</div>
-									{session && (
-										<button onClick={handleAddToCalendar} className="button-add button">
-											Добавить в календарь
-										</button>
-									)}
 
-									<button onClick={handleDownloadButton} className="button-add button">
-										{!firstTimeUser && !session ? 'Добавить в календарь' : 'Скачать файл'}
-									</button>
+									<div className="flex flex-col gap-2 lg:flex-row !mb-2">
+										{session && (
+											<button
+												onClick={handleAddToCalendar}
+												className="button-add button hover:!bg-green-700 transition-colors duration-300">
+												Добавить в календарь
+											</button>
+										)}
+
+										<button onClick={handleDownloadButton} className={`button-add button ${session ? 'lg:max-w-[350px]' : ''}`}>
+											{!firstTimeUser && !session ? 'Добавить в календарь' : 'Скачать файл'}
+										</button>
+									</div>
 
 									{!session && (
-										<p>
-											чтобы добавить в календарь нужно <span onClick={() => googleSignIn()}>войти</span>
-										</p>
+										<div className="flex justify-center text-center !px-1">
+											<p className="cursor-default">
+												<span
+													className="!text-blue-900 font-bold cursor-pointer"
+													onClick={() => {
+														setLoading(true)
+														setLoadingStatus('Пару секунд...')
+														googleSignIn()
+													}}>
+													войти{' '}
+												</span>
+												и добавить расписание в календарь
+											</p>
+										</div>
 									)}
 								</div>
 							</>

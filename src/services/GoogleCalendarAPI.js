@@ -3,12 +3,15 @@ import SurguCalendarAPI from './SurguCalendarAPI'
 import CustomError from './CustomError'
 
 class GoogleCalendarAPI {
-	constructor(providerToken) {
+	constructor(providerToken, division = 0) {
 		this.providerToken = providerToken
+		this.division = division
 		this.calendarBaseUrl = 'https://www.googleapis.com/calendar/v3'
 		this.timeZone = 'Asia/Yekaterinburg'
 		this.totalEvents = 0
 		this.importedEvents = 0
+		this.colorMap = new Map()
+		this.nextColorId = 3
 	}
 
 	async createCalendar(summary) {
@@ -37,16 +40,26 @@ class GoogleCalendarAPI {
 			const end = this.formatDateTime(lesson.datetime_end_lesson)
 			const until = lesson.repetition
 			const interval = lesson.interval ? `;INTERVAL=${lesson.interval}` : ''
-			let colorId = 0
-			// if (lesson.summary != summary) {
-			// 	summary = lesson.summary
-			// 	colorId = colorId === 12 ? 0 : colorId + 1
-			// }
+
+			// Определяем colorId в зависимости от условий
+			let colorId = this.determineEventColor(lesson)
+
+			// Определяем описание в зависимости от условий
+			let description = lesson.description
+
+			if (!this.division) {
+				description += (description ? '\n\n' : '') + lesson.group + (lesson.subgroup != '0' ? lesson.subgroup : '')
+			} else {
+				description = lesson.professor + (description ? '\n\n' : '') + description
+				if (this.division == '0') {
+					description += (description ? '\n\n' : '') + (lesson.subgroup != '0' ? lesson.group + lesson.subgroup : 'общая')
+				}
+			}
 
 			const event = {
 				summary: lesson.summary,
 				location: lesson.location,
-				description: lesson.description,
+				description: description,
 				colorId: colorId,
 				start: {
 					dateTime: start,
@@ -71,6 +84,25 @@ class GoogleCalendarAPI {
 			console.error('Ошибка при создании события: ', error)
 			throw new CustomError('Не получилось создать событие;Попробуй обратиться в службу поддержки')
 		}
+	}
+
+	determineEventColor(lesson) {
+		if (!this.division) {
+			return this.getColorForName(lesson.group)
+		} else if (this.division == 0) {
+			return this.getColorForName(lesson.subgroup)
+		} else {
+			return this.getColorForName(lesson.summary)
+		}
+	}
+
+	getColorForName(name) {
+		if (!this.colorMap.has(name)) {
+			const colorId = (this.nextColorId % 11) + 2
+			this.colorMap.set(name, colorId)
+			this.nextColorId++
+		}
+		return this.colorMap.get(name)
 	}
 
 	async importSchedule(search, setProgress, setError) {
