@@ -1,10 +1,8 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
-import { DefaultPage, HomePage, AdminPage } from '../../pages'
+import { DefaultPage, HomePage, AdminPage, LoadPage } from '../../pages'
 import { useEffect, useState } from 'react'
-import { useSession, useSessionContext, useSupabaseClient } from '@supabase/auth-helpers-react'
-import SurguCalendarAPI from '../../services/SurguCalendarAPI'
+import { useSession, useSessionContext } from '@supabase/auth-helpers-react'
 import useValidation from '../../hooks/useValidation'
-import { Flex, Spinner, Text } from '@chakra-ui/react'
 
 const App = () => {
 	const session = useSession()
@@ -30,14 +28,7 @@ const App = () => {
 	}, [user])
 
 	if (isLoading) {
-		return (
-			<Flex direction="column" alignItems="center" justifyContent="center" height="100%" gap={4} overflow="hidden">
-				<Spinner thickness="4px" speed="0.65s" size={{ base: 'lg', md: 'lg', lg: 'xl' }} />
-				<Text fontSize={'lg'} color="gray.600" textAlign={'center'}>
-					Пожалуйста, подождите... Идёт проверка данных
-				</Text>
-			</Flex>
-		)
+		return <LoadPage />
 	}
 
 	return (
