@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => ({
 		proxy: {
 			'^/api': {
 				target: mode == 'development' ? backendUrlDev : backendUrlProd,
+				changeOrigin: true,
 				ws: false,
 				secure: false,
 			},

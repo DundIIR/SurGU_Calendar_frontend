@@ -1,8 +1,21 @@
 import SearchForm from '../SearchForm/SearchForm'
+import Title from '../Title/Title'
 import './_slogan.scss'
 
-const Slogan = () => {
-	return (
+const Slogan = (admin = false) => {
+	return admin ? (
+		<section className="slogan">
+			<h1 className="slogan__title">
+				Добро пожаловать в
+				<br />
+				<span className="slogan__highlight slogan__highlight--blue"> Админ-панель</span>
+				{/* <span className="slogan__highlight slogan__highlight--green"> СурГУ календаря</span> */}
+			</h1>
+			<Title>
+				<SearchForm></SearchForm>
+			</Title>
+		</section>
+	) : (
 		<section className="slogan">
 			<p className="slogan__badge">
 				полностью бесплатно,

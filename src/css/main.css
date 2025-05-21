@@ -1,5 +1,4 @@
 @import './base/fonts.css';
-@import 'tailwindcss';
 
 /* Reset and base styles  */
 * {
@@ -152,3 +151,5 @@ body {
 		max-width: 1300px;
 	}
 } /*# sourceMappingURL=main.css.map */
+
+@import 'tailwindcss';
