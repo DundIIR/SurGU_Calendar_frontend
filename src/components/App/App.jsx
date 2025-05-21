@@ -24,22 +24,27 @@ const App = () => {
 	useEffect(() => {
 		if (user) {
 			setRole(user.role)
+			setIsRoleLoading(false)
 		}
 	}, [user])
 
-	if (isLoading) {
+	if (isLoading || isRoleLoading) {
 		return <LoadPage />
 	}
 
 	return (
 		<Routes>
+			<Route path="/" element={session ? <Navigate to={role === 'Администратор' ? '/admin' : '/home'} /> : <DefaultPage />} />
 			<Route
-				path="/"
-				element={session ? role === 'Администратор' ? <Navigate to="/admin" /> : <Navigate to="/home" /> : <DefaultPage />}
+				path="/admin"
+				element={session ? role === 'Администратор' ? <AdminPage /> : <Navigate to="/home" /> : <Navigate to="/" />}
 			/>
-			<Route path="/home" element={session ? <HomePage /> : <Navigate to="/" />} />
-			<Route path="/admin" element={session && role === 'Администратор' ? <AdminPage /> : <Navigate to="/home" />} />
+			<Route
+				path="/home"
+				element={session ? role === 'Администратор' ? <Navigate to="/admin" /> : <HomePage /> : <Navigate to="/" />}
+			/>
 		</Routes>
+		// 	<Route path="/" element={session ? <Navigate to={'/admin'} /> : <DefaultPage />} />
 	)
 }
 

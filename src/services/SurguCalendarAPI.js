@@ -9,7 +9,7 @@ class SurguCalendarAPI {
 	// Метод для получения списка групп
 	getGroups = async () => {
 		try {
-			const response = await axios.get('/api/group-list')
+			const response = await axios.get('/api/group-list/')
 			if (!response.data || response.data.length === 0) {
 				throw new CustomError('Группы не найдены; Попробуй обратиться в службу поддержки.')
 			}

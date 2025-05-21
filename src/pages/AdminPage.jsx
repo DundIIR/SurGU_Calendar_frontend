@@ -71,6 +71,7 @@ import Slogan from '../components/Slogan/Slogan'
 import { Spinner } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import LoadPage from './LoadPage'
+import SearchForm from '../components/SearchForm/SearchForm'
 
 const AdminPage = () => {
 	// { updateSchedule, searches, setSearches }
