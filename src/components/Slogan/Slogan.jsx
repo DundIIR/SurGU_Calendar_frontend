@@ -2,7 +2,7 @@ import SearchForm from '../SearchForm/SearchForm'
 import Title from '../Title/Title'
 import './_slogan.scss'
 
-const Slogan = (admin = false) => {
+const Slogan = ({ admin }) => {
 	return admin ? (
 		<section className="slogan">
 			<h1 className="slogan__title">

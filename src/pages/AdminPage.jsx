@@ -99,7 +99,7 @@ const AdminPage = () => {
 			</div>
 
 			<main className="main container">
-				<Slogan></Slogan>
+				<Slogan admin={false}></Slogan>
 			</main>
 		</>
 	)

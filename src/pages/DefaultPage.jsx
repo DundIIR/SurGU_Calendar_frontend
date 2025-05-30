@@ -84,7 +84,7 @@ const DefaultPage = () => {
 		<div className="container">
 			<Header googleBtn={googleSignIn} />
 			<main className="main container">
-				<Slogan />
+				<Slogan admin={false} />
 			</main>
 		</div>
 	)

@@ -8,9 +8,8 @@ const App = () => {
 	const session = useSession()
 	const { isLoading } = useSessionContext()
 	const [role, setRole] = useState(null)
-	const [isRoleLoading, setIsRoleLoading] = useState(true)
 	const [searches, setSearches] = useState([])
-	const { user, loading, error } = useValidation(session)
+	const { user, loading: userLoading } = useValidation(session)
 
 	const updateSchedule = () => {
 		const storedSearches = JSON.parse(localStorage.getItem('searches')) || []
@@ -24,11 +23,12 @@ const App = () => {
 	useEffect(() => {
 		if (user) {
 			setRole(user.role)
-			setIsRoleLoading(false)
+		} else {
+			setRole(null)
 		}
 	}, [user])
 
-	if (isLoading || isRoleLoading) {
+	if (isLoading || (session && userLoading)) {
 		return <LoadPage />
 	}
 
@@ -44,7 +44,6 @@ const App = () => {
 				element={session ? role === 'Администратор' ? <Navigate to="/admin" /> : <HomePage /> : <Navigate to="/" />}
 			/>
 		</Routes>
-		// 	<Route path="/" element={session ? <Navigate to={'/admin'} /> : <DefaultPage />} />
 	)
 }
 
