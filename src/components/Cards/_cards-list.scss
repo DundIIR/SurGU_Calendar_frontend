@@ -1,0 +1,95 @@
+@import '../../scss/base/vars';
+@import '../../scss/base/mixins';
+
+.highlight {
+	color: var(--primary-color);
+	font-weight: bold;
+}
+
+.card-wrapper {
+	position: relative;
+	border-radius: 12px;
+	max-width: 420px;
+	transition: transform 100ms ease-in-out, box-shadow 100ms ease-in-out;
+
+	@media (hover: hover) {
+		&:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+	}
+}
+
+.calendar-card {
+	background: white;
+	border-radius: 12px;
+	padding: 30px 19px;
+	transition: all 0.3s ease;
+	text-decoration: none;
+	color: inherit;
+	display: block;
+	overflow: hidden;
+
+	.card-logo {
+		position: absolute;
+		top: 0;
+		left: 16px;
+		width: 54px;
+		height: 54px;
+		background: rgba(25, 118, 210, 0.1);
+		transform: translateY(-50%);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 3px solid $background;
+
+		&--google {
+			background: rgba(25, 118, 210, 0.1);
+		}
+
+		&--yandex {
+			background: rgba(255, 61, 0, 0.1);
+		}
+
+		&--apple {
+			background: rgba(0, 0, 0, 0.1);
+		}
+
+		img {
+			width: 70%;
+			height: 70%;
+			object-fit: contain;
+		}
+	}
+
+	.card-title {
+		font-size: 20px;
+		line-height: 44px;
+		font-weight: 600;
+		margin-bottom: 14px;
+		opacity: 0.8;
+		&--google {
+			color: $lightBlue;
+		}
+
+		&--yandex {
+			color: $lightOrange;
+		}
+
+		&--apple {
+			color: $black;
+		}
+	}
+
+	.card-description {
+		color: $text-light;
+		line-height: 23px;
+		margin-bottom: 10px;
+	}
+
+	.card-link {
+		color: $text-light;
+		font-weight: 600;
+	}
+}

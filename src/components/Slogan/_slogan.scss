@@ -1,0 +1,129 @@
+@import '../../scss/base/vars';
+@import '../../scss/base/mixins';
+
+.slogan {
+	position: relative;
+	padding: 50px 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+
+	&::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		top: -70px;
+		width: 250px;
+		height: calc(100% + 80px);
+		background-image: url('../../img/bg-linie-punktierte.svg');
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: contain;
+		z-index: -2;
+	}
+
+	&::before {
+		content: '';
+		position: absolute;
+		left: calc(10%);
+		top: 300px;
+		width: calc(100% / 2); // увеличено с 250px
+		max-width: 350px;
+		height: calc(100% + 100px); // увеличено с 80px
+		background-image: url('../../img/bg-linie-punktierte.svg');
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 100% auto; // увеличен масштаб
+		transform: scaleX(-1) rotate(35deg); // переворот по горизонтали (можно scaleY(-1) для вертикального)
+		z-index: -2;
+	}
+
+	@include mediaDesktop {
+		&::before {
+			transform: scaleX(-1) rotate(0deg);
+		}
+	}
+
+	&__badge {
+		position: relative;
+		padding: 15px 30px;
+		text-align: center;
+		line-height: 20px;
+		margin-bottom: 50px;
+
+		&::after {
+			content: '';
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			width: 100%;
+			height: 100%;
+			background-image: url('../../img/bg-linie.svg');
+			background-repeat: no-repeat;
+			background-position: center;
+			background-size: contain;
+			z-index: -1;
+		}
+
+		@include mediaDesktop {
+			font-size: 18px;
+			&::after {
+				width: 120%;
+				height: 120%;
+			}
+		}
+	}
+
+	&__title {
+		font-family: $font-title;
+		font-weight: $fw-bold;
+		font-size: 36px;
+		line-height: 32px;
+		letter-spacing: -1px;
+		text-align: center;
+		width: 330px;
+		padding-bottom: 10px;
+
+		@include mediaDesktop {
+			font-size: 46px;
+			line-height: 4rem;
+			width: 800px;
+		}
+	}
+
+	&__highlight {
+		font-family: $font-base;
+		font-weight: 700;
+		font-size: inherit;
+		@include mediaDesktop {
+			font-size: 64px;
+		}
+
+		&--green {
+			color: $green;
+		}
+
+		&--blue {
+			color: $blue;
+		}
+	}
+
+	&__subtitle {
+		font-size: 18px;
+		color: $text-light;
+		text-align: center;
+		width: 270px;
+		margin-top: -20px;
+
+		margin-bottom: 50px;
+
+		@include mediaDesktop {
+			font-size: 22px;
+			line-height: 22px;
+			width: 350px;
+			margin-top: 0;
+		}
+	}
+}

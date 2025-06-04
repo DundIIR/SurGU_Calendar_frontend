@@ -1,0 +1,35 @@
+services:
+  backend:
+    image: ruzinde/my-backend:2.1.2
+    container_name: backend
+    restart: always
+    networks:
+      - my_network
+    env_file:
+      - ./.env
+    extra_hosts:
+      - 'db_host:92.246.214.15'
+
+  frontend:
+    image: ruzinde/my-frontend:2.1.4
+    container_name: frontend
+    restart: always
+    networks:
+      - my_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    networks:
+      - my_network
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /root/my_project/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /root/nginx/cert:/etc/letsencrypt/live/surgu-calendar.ru
+
+networks:
+  my_network:
+    external: true

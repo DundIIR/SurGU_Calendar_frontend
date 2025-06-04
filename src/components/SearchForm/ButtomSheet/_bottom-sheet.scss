@@ -1,0 +1,150 @@
+@import '../../../scss/base/vars';
+
+.drawer-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	font-family: $font-base;
+	font-size: 24px;
+	font-weight: $fw-bold;
+	color: $text;
+	line-height: 30px;
+	padding: 20px 20px;
+
+	.close-btn {
+		cursor: pointer;
+		width: 30px;
+		height: 30px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		-webkit-tap-highlight-color: transparent;
+	}
+}
+
+.custom-radio {
+	display: flex;
+	align-items: center;
+	justify-content: start;
+	gap: 10px;
+	color: $text;
+	width: 100%;
+	padding: 16px;
+	border-radius: 8px;
+	cursor: pointer;
+	position: relative;
+
+	font-size: 18px;
+	line-height: 20px;
+
+	-webkit-tap-highlight-color: transparent;
+}
+
+.custom-radio input {
+	display: none;
+	outline: none;
+	box-shadow: none !important;
+	background: transparent;
+}
+
+.radio-icon {
+	width: 22px;
+	height: 22px;
+	background-image: url('../../../img/circle.svg');
+	background-position: center center;
+	margin-top: -2px;
+}
+
+.custom-radio.active {
+	background: rgba($color: $placeholder, $alpha: 0.04);
+}
+
+.custom-radio.active .radio-icon {
+	background-image: url('../../../img/check.svg');
+}
+
+.drawer-body {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	flex-grow: 1;
+	height: 100%;
+}
+
+.no-results,
+.loading-indicator {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+	gap: 40px;
+
+	img,
+	.spinner {
+		width: 150px;
+		height: 150px;
+		border-width: 4px !important;
+	}
+
+	p {
+		text-align: center;
+		font-family: $font-title;
+		color: $black;
+		font-weight: $fw-bold;
+	}
+}
+
+.checkbox-wrapper {
+	display: flex;
+	align-items: center;
+
+	padding: 0 16px;
+	margin-bottom: 15px;
+}
+
+.custom-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	color: $text;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.custom-checkbox input {
+	display: none;
+}
+
+.checkbox-icon {
+	width: 20px;
+	height: 20px;
+	border: 2px solid $text;
+	border-radius: 3px;
+}
+
+.custom-checkbox input:checked + .checkbox-icon {
+	background-image: url('../../../img/mark.svg');
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.button-add {
+	user-select: none;
+	width: 100%;
+	-webkit-tap-highlight-color: transparent;
+
+	// @media (hover: hover) {
+	// 	&:hover {
+	// 		background-color: $green;
+	// 	}
+	// }
+
+	// @media (hover: none) {
+	// 	&:active {
+	// 		background-color: $green;
+	// 	}
+	// }
+}

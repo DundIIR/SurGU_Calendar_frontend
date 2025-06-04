@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+// Base
+.custom-app {
+	all: unset;
+}
+
+@import './base/fonts.css';
+@import './base/_reset.scss';
+@import './base/_vars.scss';
+@import './base/_mixins.scss';
+@import './base/_base.scss';
+
+// Blocks
+
+// @import './blocks/header';
+// @import './blocks/slogan';
+// @import './blocks/search-form';

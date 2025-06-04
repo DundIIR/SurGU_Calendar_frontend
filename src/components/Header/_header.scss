@@ -1,0 +1,33 @@
+@import '../../scss/base/vars';
+
+.header {
+	width: calc(100% - 20px);
+	height: 70px;
+	padding: 14px;
+	margin: 0 10px;
+	background: $white;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-radius: 50px;
+
+	margin-bottom: 17px;
+
+	box-shadow: 0 4px 10px 1px rgba(100, 100, 100, 0.09);
+
+	.menu-btn {
+		&__icon {
+			display: block;
+			width: 42px;
+			height: 42px;
+			background-image: url('../../img/login-btn.svg');
+			background-size: contain;
+			background-position: center;
+			background-repeat: no-repeat;
+		}
+
+		&__icon--logout {
+			background-image: url('../../img/logout-btn.svg');
+		}
+	}
+}
