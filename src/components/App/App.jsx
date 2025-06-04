@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom'
-import { DefaultPage, HomePage, AdminPage, LoadPage } from '../../pages'
+import { DefaultPage, HomePage, AdminPage, LoadPage, PrivacyPolicyPage, NotFoundPage } from '../../pages'
 import { useEffect, useState } from 'react'
 import { useSession, useSessionContext } from '@supabase/auth-helpers-react'
 import useValidation from '../../hooks/useValidation'
@@ -43,6 +43,8 @@ const App = () => {
 				path="/home"
 				element={session ? role === 'Администратор' ? <Navigate to="/admin" /> : <HomePage /> : <Navigate to="/" />}
 			/>
+			<Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+			<Route path="*" element={<NotFoundPage />} />
 		</Routes>
 	)
 }

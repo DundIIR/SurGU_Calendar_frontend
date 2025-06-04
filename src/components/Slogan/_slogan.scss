@@ -23,6 +23,28 @@
 		z-index: -2;
 	}
 
+	&::before {
+		content: '';
+		position: absolute;
+		left: calc(10%);
+		top: 300px;
+		width: calc(100% / 2); // увеличено с 250px
+		max-width: 350px;
+		height: calc(100% + 100px); // увеличено с 80px
+		background-image: url('../../img/bg-linie-punktierte.svg');
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 100% auto; // увеличен масштаб
+		transform: scaleX(-1) rotate(35deg); // переворот по горизонтали (можно scaleY(-1) для вертикального)
+		z-index: -2;
+	}
+
+	@include mediaDesktop {
+		&::before {
+			transform: scaleX(-1) rotate(0deg);
+		}
+	}
+
 	&__badge {
 		position: relative;
 		padding: 15px 30px;

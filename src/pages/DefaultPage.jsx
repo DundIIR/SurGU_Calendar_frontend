@@ -5,6 +5,11 @@ import { Spinner, useToast } from '@chakra-ui/react'
 import Header from '../components/Header/Header'
 import Slogan from '../components/Slogan/Slogan'
 import LoadPage from './LoadPage'
+import Footer from '../components/Footer/Footer'
+import Title from '../components/Title/Title'
+import BottomSheet from '../components/SearchForm/ButtomSheet/BottomSheet'
+import SearchForm from '../components/SearchForm/SearchForm'
+import CardsList from '../components/Cards/CardsList'
 
 const DefaultPage = () => {
 	const session = useSession()
@@ -81,11 +86,23 @@ const DefaultPage = () => {
 	}
 
 	return (
-		<div className="container">
+		<div className="container h-full">
 			<Header googleBtn={googleSignIn} />
 			<main className="main container">
 				<Slogan admin={false} />
+				<Title
+					title={
+						<p>
+							Подходит для <span className="highlight--blue">любого </span>
+							<br />
+							умного календаря
+						</p>
+					}
+					position="right">
+					<CardsList />
+				</Title>
 			</main>
+			<Footer />
 		</div>
 	)
 }
