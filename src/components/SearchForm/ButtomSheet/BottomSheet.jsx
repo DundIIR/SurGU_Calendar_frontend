@@ -137,6 +137,13 @@ const BottomSheet = ({ isOpen, onClose, searchQuery, loadingData }) => {
 				setLoadingStatus(`Такого расписания к сожалению не нашлось`)
 				setNotFound(true)
 			}
+			toast({
+				title: 'Расписание успешно добавлено в календарь',
+				description: <a href="/">следуйте инструкции</a>,
+				status: 'success',
+				duration: 6000,
+				isClosable: true,
+			})
 		}
 	}, [isOpen, loadingData])
 

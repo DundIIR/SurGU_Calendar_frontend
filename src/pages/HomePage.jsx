@@ -10,6 +10,9 @@ import Slogan from '../components/Slogan/Slogan'
 import { Spinner } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import LoadPage from './LoadPage'
+import Title from '../components/Title/Title'
+import CardsList from '../components/Cards/CardsList'
+import Footer from '../components/Footer/Footer'
 
 const HomePage = () => {
 	// { updateSchedule, searches, setSearches }
@@ -45,8 +48,20 @@ const HomePage = () => {
 			</div>
 
 			<main className="main container">
-				<Slogan></Slogan>
+				<Slogan admin={false} />
+				<Title
+					title={
+						<p>
+							Подходит для <span className="highlight--blue">любого </span>
+							<br />
+							умного календаря
+						</p>
+					}
+					position="right">
+					<CardsList />
+				</Title>
 			</main>
+			<Footer />
 		</>
 	)
 }

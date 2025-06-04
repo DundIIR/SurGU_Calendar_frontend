@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import SurguCalendarAPI from '../services/SurguCalendarAPI'
 
 const useValidation = session => {
@@ -6,8 +6,17 @@ const useValidation = session => {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
-	const validateToken = async () => {
-		if (!session?.access_token) {
+	const validateToken = useCallback(async () => {
+		// Если сессии нет, сбрасываем пользователя
+		if (!session) {
+			setUser(null)
+			setLoading(false)
+			return
+		}
+
+		// Если есть сессия, но нет токена, тоже сбрасываем
+		if (!session.access_token) {
+			setUser(null)
 			setLoading(false)
 			return
 		}
@@ -21,17 +30,16 @@ const useValidation = session => {
 		} catch (err) {
 			console.error('Ошибка валидации токена:', err)
 			setError(err)
+			setUser(null)
 		} finally {
 			setLoading(false)
 		}
-	}
-
-	// Автоматическая валидация при изменении сессии
-	useEffect(() => {
-		validateToken()
 	}, [session])
 
-	// Возвращаем состояние и функцию для ручной валидации
+	useEffect(() => {
+		validateToken()
+	}, [validateToken])
+
 	return { user, loading, error, revalidate: validateToken }
 }
 

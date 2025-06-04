@@ -1,0 +1,30 @@
+@import '../../scss/base/vars';
+@import '../../scss/base/mixins';
+
+.title-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.title,
+.title-wrapper {
+	font-family: $font-title;
+	font-weight: $fw-bold;
+	font-size: 32px;
+	line-height: 30px;
+	letter-spacing: -2px;
+	padding-bottom: 10px;
+	width: fit-content;
+
+	@include mediaDesktop {
+		font-size: 46px;
+		line-height: 4rem;
+	}
+}
+
+.highlight {
+	&--blue {
+		color: $lightBlue;
+	}
+}

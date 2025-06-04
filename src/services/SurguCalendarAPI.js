@@ -16,8 +16,18 @@ class SurguCalendarAPI {
 
 			return response.data
 		} catch (error) {
-			console.error(error)
-			throw new CustomError('Ошибка запроса; Не удалось получить список групп.')
+			if (error.response) {
+				// Ошибка от API
+				throw new CustomError(error.response.data?.error || 'Ошибка запроса', {
+					status: error.response.status,
+					details: error.response.data?.details,
+				})
+			} else {
+				// Сетевая ошибка
+				throw new CustomError('Не удалось подключиться к серверу', {
+					details: error,
+				})
+			}
 		}
 	}
 
@@ -121,6 +131,33 @@ class SurguCalendarAPI {
 		}
 	}
 
+	validateToken = async token => {
+		try {
+			const response = await axios.get(`/api/validate-token/V2/`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Cache-Control': 'no-cache, no-store, must-revalidate',
+					Pragma: 'no-cache',
+					Expires: '0',
+				},
+			})
+			return response.data
+		} catch (error) {
+			if (error.response) {
+				// Ошибка от API
+				throw new CustomError(error.response.data?.error || 'Ошибка запроса', {
+					status: error.response.status,
+					details: error.response.data?.details,
+				})
+			} else {
+				// Сетевая ошибка
+				throw new CustomError('Не удалось подключиться к серверу', {
+					details: error,
+				})
+			}
+		}
+	}
+
 	// НЕ ИСПОЛЬЗУЕТСЯ
 	// Метод для проверки существования группы или преподавателя
 	getSearchCheck = async query => {
@@ -193,20 +230,6 @@ class SurguCalendarAPI {
 		}
 	}
 
-	validateToken = async token => {
-		try {
-			const response = await axios.get('/api/validate-token/V2/', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			})
-			return response.data
-		} catch (error) {
-			console.error(error)
-			throw new CustomError('Ошибка авторизации; Попробуйте снова войти в систему.')
-		}
-	}
-
 	getSchedule = async search => {
 		console.log(search)
 		try {
@@ -221,7 +244,7 @@ class SurguCalendarAPI {
 			return response.data
 		} catch (error) {
 			console.log(error)
-			if (response && response.data && response.data.length < 1)
+			if (error && error.data && error.data.length < 1)
 				throw new CustomError('Не получилось найти расписание;Попробуй изменить поисковый запрос или обратись в службу поддержки')
 			else throw new CustomError('Сервер спит;Попробуй обратится в службу поддержки или зайти позже')
 		}
