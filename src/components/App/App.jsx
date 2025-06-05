@@ -28,7 +28,7 @@ const App = () => {
 		}
 	}, [user])
 
-	if (isLoading || (session && userLoading)) {
+	if (isLoading) {
 		return <LoadPage />
 	}
 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Spinner, useToast } from '@chakra-ui/react'
@@ -16,11 +16,13 @@ const DefaultPage = () => {
 	const navigate = useNavigate()
 	const location = useLocation()
 	const supabase = useSupabaseClient()
+	const [isLoading, setIsLoading] = useState(false)
 	const toast = useToast()
 
 	// 1. Функция входа через Google
 	const googleSignIn = async () => {
 		try {
+			setIsLoading(true)
 			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
@@ -81,6 +83,8 @@ const DefaultPage = () => {
 	if (session) {
 		navigate('/home')
 		return <LoadPage />
+	} else if (isLoading) {
+		return <LoadPage content={'Пару секунд... Вы в очереди на авторизацию'} />
 	} else {
 		signOut()
 	}

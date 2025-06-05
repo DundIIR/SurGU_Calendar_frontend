@@ -20,7 +20,9 @@ const Header = ({ googleBtn }) => {
 				<img src={logo} alt="СурГУ Календарь" width="148" height="30" />
 			</a>
 			<div className="flex items-center gap-4">
-				<span className="font-semibold !mb-[-4px]">{session?.user.user_metadata.full_name}</span>
+				<span className="font-semibold !mb-[-4px] text-end line-clamp-2 max-w-[150px] max-h-[42px] leading-[1.2rem] overflow-hidden sm:max-w-[350px]">
+					{session?.user.user_metadata.full_name}
+				</span>
 				<Tooltip
 					label={session ? 'Кнопка выхода' : 'При авторизации вы соглашаетесь с политикой конфиденциальности'}
 					placement="bottom"

@@ -10,13 +10,13 @@ export default defineConfig(({ mode }) => ({
 	plugins: [react(), tailwindcss()],
 	server: {
 		host: '0.0.0.0',
-		proxy: {
-			'^/api': {
-				target: mode == 'development' ? backendUrlDev : backendUrlProd,
-				changeOrigin: true,
-				ws: false,
-				secure: false,
-			},
-		},
+		// proxy: {
+		// 	'^/api': {
+		// 		target: mode == 'development' ? backendUrlDev : backendUrlProd,
+		// 		changeOrigin: true,
+		// 		ws: false,
+		// 		secure: false,
+		// 	},
+		// },
 	},
 }))

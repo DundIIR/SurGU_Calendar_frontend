@@ -4,12 +4,13 @@ import CustomError from './CustomError'
 class SurguCalendarAPI {
 	constructor(accessToken = '') {
 		this.accessToken = accessToken
+		this.backendUrl = 'https://surgu-calendar.ru'
 	}
 
 	// Метод для получения списка групп
 	getGroups = async () => {
 		try {
-			const response = await axios.get('/api/group-list/')
+			const response = await axios.get(`${this.backendUrl}/api/group-list/`)
 			if (!response.data || response.data.length === 0) {
 				throw new CustomError('Группы не найдены; Попробуй обратиться в службу поддержки.')
 			}
@@ -34,7 +35,7 @@ class SurguCalendarAPI {
 	// Метод для получения списка преподавателей
 	getProfessors = async () => {
 		try {
-			const response = await axios.get('/api/professors-list/')
+			const response = await axios.get(`${this.backendUrl}/api/professors-list/`)
 
 			if (!response.data || response.data.length === 0) {
 				throw new CustomError('Преподаватели не найдены; Попробуй обратиться в службу поддержки.')
@@ -57,7 +58,7 @@ class SurguCalendarAPI {
 			if (professor) params.professor = professor
 			if (isChecked) params.shorten_names = isChecked
 
-			const response = await axios.get('/api/schedule/', {
+			const response = await axios.get(`${this.backendUrl}/api/schedule/`, {
 				headers: {
 					Authorization: `Bearer ${this.accessToken}`,
 					'Content-Type': 'application/json',
@@ -99,7 +100,7 @@ class SurguCalendarAPI {
 			if (professor) params.professor = professor
 			if (isChecked) params.shorten_names = isChecked
 
-			const response = await axios.get('/api/file-schedule/', {
+			const response = await axios.get(`${this.backendUrl}/api/file-schedule/`, {
 				headers: {
 					Authorization: `Bearer ${this.accessToken}`,
 					'Content-Type': 'application/json',
@@ -133,7 +134,7 @@ class SurguCalendarAPI {
 
 	validateToken = async token => {
 		try {
-			const response = await axios.get(`/api/validate-token/V2/`, {
+			const response = await axios.get(`${this.backendUrl}/api/validate-token/V2/`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -162,7 +163,7 @@ class SurguCalendarAPI {
 	// Метод для проверки существования группы или преподавателя
 	getSearchCheck = async query => {
 		try {
-			const response = await axios.get(`/api/check?search=${query}`)
+			const response = await axios.get(`${this.backendUrl}/api/check?search=${query}`)
 
 			if (!response.data || response.data.message) {
 				const errorMessage = response.data && response.data.message ? response.data.message : 'Ничего не найдено по запросу.'
@@ -178,7 +179,7 @@ class SurguCalendarAPI {
 	updateUserRole = async (token, email, role) => {
 		try {
 			const response = await axios.post(
-				'/api/update-role/',
+				`${this.backendUrl}/update-role/`,
 				{
 					email: email,
 					role: role,
@@ -204,7 +205,7 @@ class SurguCalendarAPI {
 
 	getUsersList = async token => {
 		try {
-			const response = await axios.get('/api/users/', {
+			const response = await axios.get(`${this.backendUrl}/api/users/`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
@@ -218,7 +219,7 @@ class SurguCalendarAPI {
 
 	getFilesList = async token => {
 		try {
-			const response = await axios.get('/api/files/', {
+			const response = await axios.get(`${this.backendUrl}/api/files/`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
@@ -233,7 +234,7 @@ class SurguCalendarAPI {
 	getSchedule = async search => {
 		console.log(search)
 		try {
-			let response = await axios.get('/api', {
+			let response = await axios.get(`${this.backendUrl}/api`, {
 				params: {
 					search: search,
 				},

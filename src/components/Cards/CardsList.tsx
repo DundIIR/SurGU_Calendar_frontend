@@ -32,12 +32,11 @@ const CardsList = () => {
 	]
 
 	return (
-		<section className="!px-2 ">
+		<section className="!px-2">
 			<div className="flex flex-col xl:flex-row justify-between gap-10 items-center">
 				{cards.map(card => (
-					<div className="card-wrapper">
+					<div className="card-wrapper" key={card.id}>
 						<a
-							key={card.id}
 							href={card.link}
 							className="calendar-card"
 							onClick={e => {
