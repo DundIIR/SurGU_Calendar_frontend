@@ -36,6 +36,12 @@ body {
 	height: 100vh;
 }
 
+html,
+body {
+	overflow-x: hidden;
+	width: 100%;
+}
+
 #root {
 	height: 100%;
 }

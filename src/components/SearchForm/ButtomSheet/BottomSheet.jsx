@@ -105,7 +105,6 @@ const BottomSheet = ({ isOpen, onClose, searchQuery, loadingData }) => {
 			setSubgroupOptions([{ value: '0', label: 'Всё расписание' }])
 		}
 		if (isOpen && searchQuery && !loadingData) {
-			console.log(loadingData)
 			setLoading(true)
 			setLoadingStatus('')
 
@@ -121,6 +120,12 @@ const BottomSheet = ({ isOpen, onClose, searchQuery, loadingData }) => {
 				setLoading(false)
 				setNotFound(false)
 			} else if (query.professor) {
+				if (query.professor == 'пошел нахуй' || query.professor == 'пошел на хуй') {
+					setLoading(false)
+					setLoadingStatus(`Сам пошел на хуй`)
+					setNotFound(true)
+					return
+				}
 				const filteredProfessors = professors.filter(prof => prof.toLowerCase().includes(query.professor.toLowerCase()))
 				const formattedOptions = filteredProfessors.map(item => ({
 					value: item,
@@ -129,21 +134,19 @@ const BottomSheet = ({ isOpen, onClose, searchQuery, loadingData }) => {
 				setSubgroupOptions(formattedOptions)
 				if (formattedOptions.length == 1) {
 					setSubgroupValue(formattedOptions[0].value)
+				} else if (formattedOptions.length < 1) {
+					setLoading(false)
+					setLoadingStatus(`Такого преподавателя не нашлось`)
+					setNotFound(true)
+				} else {
+					setLoading(false)
+					setNotFound(false)
 				}
-				setLoading(false)
-				setNotFound(false)
 			} else {
 				setLoading(false)
-				setLoadingStatus(`Такого расписания к сожалению не нашлось`)
+				setLoadingStatus(`Такой группы не нашлось`)
 				setNotFound(true)
 			}
-			toast({
-				title: 'Расписание успешно добавлено в календарь',
-				description: <a href="/">следуйте инструкции</a>,
-				status: 'success',
-				duration: 6000,
-				isClosable: true,
-			})
 		}
 	}, [isOpen, loadingData])
 
@@ -259,7 +262,13 @@ const BottomSheet = ({ isOpen, onClose, searchQuery, loadingData }) => {
 			) // Используем API для получения URL файла
 
 			// Открытие файла
-			window.open(fileUrl, '_blank')
+			// window.open(fileUrl, '_blank')
+			const link = document.createElement('a')
+			link.href = fileUrl
+			link.download = 'fileUrl'
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
 
 			clearTimeout(loadingTimer)
 			clearTimeout(loadingTimer2)
@@ -344,7 +353,11 @@ const BottomSheet = ({ isOpen, onClose, searchQuery, loadingData }) => {
 											</button>
 										)}
 
-										<button onClick={handleDownloadButton} className={`button-add button ${session ? 'lg:max-w-[350px]' : ''}`}>
+										<button
+											onClick={handleDownloadButton}
+											className={`button-add button hover:!bg-blue-800 ${
+												session ? 'lg:max-w-[350px]' : ''
+											} transition-colors duration-300`}>
 											{!firstTimeUser && !session ? 'Добавить в календарь' : 'Скачать файл'}
 										</button>
 									</div>
